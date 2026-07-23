@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::dropIfExists('ui_translations');
+        Schema::dropIfExists('languages');
+    }
+
+    public function down(): void
+    {
+        Schema::create('languages', function (Blueprint $table) {
+            $table->id();
+            $table->string('iso_code', 10)->unique();
+            $table->string('name', 100);
+            $table->string('locale_code', 20)->nullable();
+            $table->boolean('active')->default(true);
+            $table->boolean('is_rtl')->default(false);
+            $table->boolean('is_default')->default(false);
+            $table->unsignedInteger('position')->default(0);
+            $table->timestamps();
+        });
+
+        Schema::create('ui_translations', function (Blueprint $table) {
+            $table->id();
+            $table->string('locale', 10);
+            $table->string('group', 50)->default('erp');
+            $table->string('key');
+            $table->text('value')->nullable();
+            $table->timestamps();
+            $table->unique(['locale', 'group', 'key']);
+        });
+    }
+};
